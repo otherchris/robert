@@ -25,23 +25,30 @@ defmodule RulesServer do
     {:reply, state, state}
   end
 
-  def handle_call({:allow_motion, member_id, _}, _from, state) do
-    if state.floor.speaker == member_id do
-      {:reply, true, state}
-    else
-      {:reply, false, state}
+  def handle_call({:allow_motion, member_id, :adjourn}, _from, state) do
+    case Rules.motion_to_adjourn(member_id, state.floor) do
+      {:ok, _, _} -> {:reply, true, state}
+      _ -> {:reply, false, state}
     end
   end
 
   def handle_cast({:make_motion, member_id, :adjourn}, state = %{floor: floor}) do
     new_state =
-      if GenServer.call(self(), {:allow_motion, member_id, :adjourn}) do
-        new_floor = Floor.move(floor, :adjourn);
-        Map.put(state, :floor, new_floor)
-      else
-        state
-      end
+      apply_event(
+        :motion_to_adjourn,
+        :motion_to_adjourn,
+        state,
+        member_id
+      )
     {:noreply, new_state}
   end
 
+  defp apply_event(floor_transform, rule_function, state, member_id) do
+    case apply(Rules, rule_function, [member_id, state.floor]) do
+      {:ok, _, _} ->
+        new_floor = apply(Floor, floor_transform, [state.floor])
+        Map.put(state, :floor, new_floor)
+      _ -> state
+    end
+  end
 end

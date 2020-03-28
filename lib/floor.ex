@@ -17,10 +17,10 @@ defmodule Floor do
   def yield_to(floor, new_speaker), do: Map.put(floor, :speaker, new_speaker)
 
   @doc """
-  Make a motion on the floor
+  Make a motion to adjourn
   """
-  @spec move(Floor.t(), atom) :: Floor.t()
-  def move(floor, :adjourn) do
+  @spec motion_to_adjourn(Floor.t()) :: Floor.t()
+  def motion_to_adjourn(floor) do
     floor
     |> Map.put(:motion_stack, floor.motion_stack ++ [:adjourn])
     |> Map.put(:need_second, true)
