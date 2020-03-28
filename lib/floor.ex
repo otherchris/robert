@@ -3,6 +3,8 @@ defmodule Floor do
   Documentation for `Floor`.
   """
 
+  @behaviour Actions
+
   defstruct [
     :speaker,
     motion_stack: [],
@@ -19,8 +21,8 @@ defmodule Floor do
   @doc """
   Make a motion to adjourn
   """
-  @spec motion_to_adjourn(Floor.t()) :: Floor.t()
-  def motion_to_adjourn(floor) do
+  @spec motion_to_adjourn(Floor.t(), String.t()) :: Floor.t()
+  def motion_to_adjourn(floor, _) do
     floor
     |> Map.put(:motion_stack, floor.motion_stack ++ [:adjourn])
     |> Map.put(:need_second, true)

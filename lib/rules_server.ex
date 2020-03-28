@@ -25,21 +25,21 @@ defmodule RulesServer do
     {:reply, state, state}
   end
 
-  def handle_call({:allow_motion, member_id, :adjourn}, _from, state) do
-    case Rules.motion_to_adjourn(member_id, state.floor) do
-      {:ok, _, _} -> {:reply, true, state}
+  def handle_call({:allow_motion, member_id, :adjourn}, _from, state = %{floor: floor}) do
+    case Rules.motion_to_adjourn(floor, member_id) do
+      :ok -> {:reply, true, state}
       _ -> {:reply, false, state}
     end
   end
 
   def handle_cast({:make_motion, member_id, :adjourn}, state = %{floor: floor}) do
     new_state =
-      apply_event(
-        :motion_to_adjourn,
-        :motion_to_adjourn,
-        state,
-        member_id
-      )
+      with :ok <- Rules.motion_to_adjourn(floor, member_id) do
+        new_floor = Floor.motion_to_adjourn(floor, member_id)
+        Map.put(state, :floor, new_floor)
+      else
+        e -> state
+      end
     {:noreply, new_state}
   end
 
