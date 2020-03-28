@@ -22,13 +22,13 @@ defmodule RulesServerTest do
 
   describe "commands" do
     test "make a motion to adjourn if allowed", %{rules_server: rules_server} do
-      GenServer.cast(rules_server, {:make_motion, "member_id_has_floor", :adjourn})
+      assert GenServer.cast(rules_server, {:action, :motion_to_adjourn, "member_id_has_floor"})
       %{floor: %{motion_stack: ms}} = :sys.get_state(rules_server)
       assert ms == [:adjourn]
     end
 
     test "do not make a motion to adjourn if not allowed", %{rules_server: rules_server} do
-      GenServer.cast(rules_server, {:make_motion, "member_id", :adjourn})
+      GenServer.cast(rules_server, {:action, :motion_to_adjourn, "member_id"})
       %{floor: %{motion_stack: ms}} = :sys.get_state(rules_server)
       assert ms == []
     end

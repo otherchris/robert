@@ -32,23 +32,15 @@ defmodule RulesServer do
     end
   end
 
-  def handle_cast({:make_motion, member_id, :adjourn}, state = %{floor: floor}) do
+  # TODO: add introspection into Actions to ensure the message is a real action
+  def handle_cast({:action, action, member_id}, state = %{floor: floor}) do
     new_state =
-      with :ok <- Rules.motion_to_adjourn(floor, member_id) do
-        new_floor = Floor.motion_to_adjourn(floor, member_id)
+      with :ok <- apply(Rules, action, [floor, member_id]) do
+        new_floor = apply(Floor, action, [floor, member_id])
         Map.put(state, :floor, new_floor)
       else
         e -> state
       end
     {:noreply, new_state}
-  end
-
-  defp apply_event(floor_transform, rule_function, state, member_id) do
-    case apply(Rules, rule_function, [member_id, state.floor]) do
-      {:ok, _, _} ->
-        new_floor = apply(Floor, floor_transform, [state.floor])
-        Map.put(state, :floor, new_floor)
-      _ -> state
-    end
   end
 end
