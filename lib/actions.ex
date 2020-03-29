@@ -4,6 +4,19 @@ defmodule Actions do
   every action.
   """
 
-  @callback motion_to_adjourn(Floor.t(), String.t()) :: :ok | {:error, atom} | Floor.t()
+  @doc """
+  The action type specification is
+
+  - Current floor state
+  - Subject
+  - Object
+
+  This is enough to allow us to determine if the action is permitted and what the resulting floor state will be.
+  """
+  @type t() :: {Floor.t(), String.t(), String.t() | atom}
+  @type result() :: :ok | {:error, atom} | Floor.t()
+
+  @callback motion_to_adjourn(t()) :: result()
+  @callback recognize(t()) :: result()
 
 end
