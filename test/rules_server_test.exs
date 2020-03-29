@@ -10,13 +10,15 @@ defmodule RulesServerTest do
     %{rules_server: rules_server}
   end
 
-  describe "allowing actions" do
-    test "motion to adjourn not allowed if member does not have the floor", %{rules_server: rules_server} do
-      refute GenServer.call(rules_server, {:allow_motion, "member_id", :adjourn})
+  describe "action list" do
+    test "disallowed actions get a false", %{rules_server: rules_server} do
+      list = GenServer.call(rules_server, {:action_list, "member_id"})
+      assert Enum.member?(list, {:motion_to_adjourn, {:error, :check_floor}})
     end
 
-    test "motion to adjourn allowed if member does have the floor", %{rules_server: rules_server} do
-      assert GenServer.call(rules_server, {:allow_motion, "member_id_has_floor", :adjourn})
+    test "allowed actions get a true", %{rules_server: rules_server} do
+      list = GenServer.call(rules_server, {:action_list, "member_id_has_floor"})
+      assert Enum.member?(list, {:motion_to_adjourn, :ok})
     end
   end
 

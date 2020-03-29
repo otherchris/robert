@@ -25,11 +25,12 @@ defmodule RulesServer do
     {:reply, state, state}
   end
 
-  def handle_call({:allow_motion, member_id, :adjourn}, _from, state = %{floor: floor}) do
-    case Rules.motion_to_adjourn(floor, member_id) do
-      :ok -> {:reply, true, state}
-      _ -> {:reply, false, state}
-    end
+  # TODO: add introspection into Actions to get a comprehensive list
+  def handle_call({:action_list, member_id}, _from, state = %{floor: floor}) do
+    list =
+      [:motion_to_adjourn]
+      |> Enum.map(fn(action) -> {action, apply(Rules, action, [floor, member_id])} end)
+    {:reply, list, state}
   end
 
   # TODO: add introspection into Actions to ensure the message is a real action
