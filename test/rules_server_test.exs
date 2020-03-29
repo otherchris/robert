@@ -1,5 +1,5 @@
 defmodule RulesServerTest do
-  @modeuldoc false
+  @moduledoc false
 
   use ExUnit.Case
   doctest RulesServer
@@ -23,6 +23,9 @@ defmodule RulesServerTest do
   end
 
   describe "commands" do
+    # Testing on the "motion_to_adjourn" action. Individual actions and their
+    # effects should be tested on Floor and Rules. This case is enough to
+    # verify the behavior of the RulesServer.
     test "make a motion to adjourn if allowed", %{rules_server: rules_server} do
       assert GenServer.cast(rules_server, {:action, :motion_to_adjourn, "member_id_has_floor"})
       %{floor: %{motion_stack: ms}} = :sys.get_state(rules_server)
