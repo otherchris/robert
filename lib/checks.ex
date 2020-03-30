@@ -1,8 +1,10 @@
 defmodule Checks do
   @moduledoc """
-  Check for certain conditions in the conjunction of a `Floor` and a member id.
+  Check for certain conditions in a given tuple of Action data (`Floor`, member_id of
+  subject, member_id of object).
 
-  {:ok, member_id, floor} go ahead
+  {:ok, (action tuple)} go ahead with next check
+
   {:error, msg} stop, fall through
   """
 

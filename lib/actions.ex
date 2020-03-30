@@ -1,15 +1,16 @@
 defmodule Actions do
   @moduledoc """
-  Actions
+  An action is a tuple with the action name and action data (`Floor`, member_id of subject,
+  member_id of object).
 
-  The action type specification is
+  This module does three things:
 
-  - Action name
-  - Current floor state
-  - Subject
-  - Object
-
-  This is enough to allow us to determine if the action is permitted and what the resulting floor state will be.
+  - `list_of_actions/0` is the source of truth for what actions exist in the system and
+  which `Checks` mus be applied
+  - `check_action/1` will determine if a given action is applicable given the state of
+  the meeting and the members involved
+  - `apply_action/1` will return the resulting state of the meeting after applying the
+  action (or an error)
   """
 
   @type t() :: {atom, data()}
@@ -39,7 +40,7 @@ defmodule Actions do
   def apply_action({action_name, data}) do
     with :ok <- check_action({action_name, data})
     do
-      apply(Floor, action_name, [data])
+      {:ok, apply(Floor, action_name, [data])}
     else
       e -> e
     end

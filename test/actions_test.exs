@@ -10,7 +10,7 @@ defmodule ActionsTest do
     end
 
     test "recognize sets the speaker" do
-      floor = Actions.apply_action({:recognize, {%Floor{chair: "chair"}, "chair", "some_object"}})
+      {:ok, floor} = Actions.apply_action({:recognize, {%Floor{chair: "chair"}, "chair", "some_object"}})
       assert floor.speaker == "some_object"
     end
   end
@@ -21,12 +21,12 @@ defmodule ActionsTest do
     end
 
     test "motion_to_adjourn pushes the motion onto the motion stack" do
-      floor = Actions.apply_action({:motion_to_adjourn, {%Floor{speaker: "speaker"}, "speaker", :any}})
+      {:ok, floor} = Actions.apply_action({:motion_to_adjourn, {%Floor{speaker: "speaker"}, "speaker", :any}})
       assert floor.motion_stack == [:motion_to_adjourn]
     end
 
     test "motion to adjourn needs a second" do
-      floor = Actions.apply_action({:motion_to_adjourn, {%Floor{speaker: "speaker"}, "speaker", :any}})
+      {:ok, floor} = Actions.apply_action({:motion_to_adjourn, {%Floor{speaker: "speaker"}, "speaker", :any}})
       assert floor.needs_second
     end
   end
@@ -37,7 +37,7 @@ defmodule ActionsTest do
     end
 
     test "unsets need_second?" do
-      floor = Actions.apply_action({:second, {%Floor{needs_second: true}, "speaker", :any}})
+      {:ok, floor} = Actions.apply_action({:second, {%Floor{needs_second: true}, "speaker", :any}})
       refute floor.needs_second
     end
   end
