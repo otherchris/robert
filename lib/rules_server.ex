@@ -9,6 +9,7 @@ defmodule RulesServer do
     GenServer.start_link(__MODULE__, :ok, opts)
   end
 
+  @impl true
   def init(:ok) do
     {:ok, %{
       floor: %Floor{},
@@ -17,11 +18,13 @@ defmodule RulesServer do
     }}
   end
 
+  @impl true
   def handle_call(:report, _from, state) do
     {:reply, state, state}
   end
 
   # TODO: add introspection into Actions to get a comprehensive list
+  @impl true
   def handle_call({:action_list, subject_id}, _from, state = %{floor: floor}) do
     list =
       [:motion_to_adjourn]
@@ -29,11 +32,13 @@ defmodule RulesServer do
     {:reply, list, state}
   end
 
+  @impl true
   def handle_cast({:set_floor, f = %Floor{}}, state) do
     {:noreply, Map.put(state, :floor, f)}
   end
 
   # TODO: add introspection into Actions to ensure the message is a real action
+  @impl true
   def handle_cast({:action, action, subject_id, object_id}, state = %{floor: floor}) do
     new_state =
       with :ok <- apply(Rules, action, [{floor, subject_id, object_id}]) do

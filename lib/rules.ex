@@ -22,6 +22,7 @@ defmodule Rules do
       {:error, :has_floor}
   """
   @spec motion_to_adjourn(Action.t()) :: :ok | {:error, atom}
+  @impl true
   def motion_to_adjourn({floor = %Floor{}, member_id, _}) when is_binary(member_id) do
     with {:ok, _}  <- Checks.has_floor({:ok, {floor, member_id, :any}})
     do
@@ -44,6 +45,7 @@ defmodule Rules do
       {:error, :is_chair}
   """
   @spec recognize(Action.t()) :: :ok | {:error, atom}
+  @impl true
   def recognize({floor = %Floor{}, subject_id, object_id}) when is_binary(subject_id) and is_binary(object_id) do
     with {:ok, _} <- Checks.is_chair({:ok, {floor, subject_id, object_id}})
     do
