@@ -13,7 +13,7 @@ defmodule RulesServerTest do
   describe "action list" do
     test "disallowed actions get a false", %{rules_server: rules_server} do
       list = GenServer.call(rules_server, {:action_list, "member_id"})
-      assert Enum.member?(list, {:motion_to_adjourn, {:error, :check_floor}})
+      refute Enum.member?(list, {:motion_to_adjourn, {:error, :check_floor}})
     end
 
     test "allowed actions get a true", %{rules_server: rules_server} do
