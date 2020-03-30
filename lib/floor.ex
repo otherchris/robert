@@ -26,7 +26,7 @@ defmodule Floor do
   @doc """
   Make a motion to adjourn
   """
-  @spec motion_to_adjourn(Action.data()) :: Floor.t()
+  @spec motion_to_adjourn(Actions.data()) :: Floor.t()
   def motion_to_adjourn({floor, _, _}) do
     floor
     |> Map.put(:motion_stack, floor.motion_stack ++ [:motion_to_adjourn])
