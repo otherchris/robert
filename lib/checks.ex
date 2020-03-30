@@ -6,7 +6,7 @@ defmodule Checks do
   {:error, msg} stop, fall through
   """
 
-  @type check_pass() :: {:ok, Actions.t()}
+  @type check_pass() :: {:ok, Actions.data()}
   @type check_fail() :: {:error, atom}
 
   @doc """
@@ -60,4 +60,13 @@ defmodule Checks do
     end
   end
   def is_chair({:error, msg}), do: {:error, msg}
+
+  def needs_second?({:ok, data = {floor, subject_id, object_id}}) do
+    if floor.needs_second do
+      {:ok, data}
+    else
+      {:error, :needs_second?}
+    end
+  end
+  def needs_second?({:error, msg}), do: {:error, msg}
 end
