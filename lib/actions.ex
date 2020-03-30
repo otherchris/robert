@@ -6,7 +6,7 @@ defmodule Actions do
   This module does three things:
 
   - `list_of_actions/0` is the source of truth for what actions exist in the system and
-  which `Checks` mus be applied
+  which `Checks` must be applied
   - `check_action/1` will determine if a given action is applicable given the state of
   the meeting and the members involved
   - `apply_action/1` will return the resulting state of the meeting after applying the
