@@ -5,9 +5,33 @@ defmodule RulesServer do
 
   use GenServer
 
+  # Client API
+
+  @doc """
+  Start the rules server
+  """
   def start_link(opts) do
     GenServer.start_link(__MODULE__, :ok, opts)
   end
+
+  @doc """
+  Return the list of allowed actions for a given subject.
+  """
+  @spec allowed_actions(pid, String.t()) :: [{atom, boolean}]
+  def allowed_actions(server, subject_id) do
+    GenServer.call(server, {:action_list, subject_id})
+  end
+
+  @doc """
+  Apply an action
+  """
+  @spec apply_action(pid, Action.t()) :: :ok
+  def apply_action(server, {action, subject_id, object_id}) do
+    GenServer.cast(server, {:action, action, subject_id, object_id})
+    :ok
+  end
+
+  # Server callbacks
 
   @impl true
   def init(:ok) do
