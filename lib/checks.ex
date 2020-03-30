@@ -63,12 +63,21 @@ defmodule Checks do
   end
   def is_chair({:error, msg}), do: {:error, msg}
 
-  def needs_second?({:ok, data = {floor, subject_id, object_id}}) do
-    if floor.needs_second do
+  def waiting_for_second({:ok, data = {floor, subject_id, object_id}}) do
+    if floor.waiting_for_second do
       {:ok, data}
     else
-      {:error, :needs_second?}
+      {:error, :waiting_for_second}
     end
   end
-  def needs_second?({:error, msg}), do: {:error, msg}
+  def waiting_for_second({:error, msg}), do: {:error, msg}
+
+  def not_waiting_for_second({:ok, data = {floor, subject_id, object_id}}) do
+    if !floor.waiting_for_second do
+      {:ok, data}
+    else
+      {:error, :not_waiting_for_second}
+    end
+  end
+  def not_waiting_for_second({:error, msg}), do: {:error, msg}
 end

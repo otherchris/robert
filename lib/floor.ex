@@ -12,7 +12,7 @@ defmodule Floor do
     :chair,
     :speaker,
     motion_stack: [],
-    needs_second: false
+    waiting_for_second: false
   ]
 
   @type t() :: %Floor{}
@@ -30,13 +30,18 @@ defmodule Floor do
   def motion_to_adjourn({floor, _, _}) do
     floor
     |> Map.put(:motion_stack, floor.motion_stack ++ [:motion_to_adjourn])
-    |> Map.put(:needs_second, true)
+    |> Map.put(:waiting_for_second, true)
   end
 
   @doc """
   Seconds the motion on the floor
   """
   @spec second(Actions.data()) :: Floor.t()
-  def second({floor, _, _}), do: Map.put(floor, :needs_second, false)
+  def second({floor, _, _}), do: Map.put(floor, :waiting_for_second, false)
 
+  @doc """
+  Calls a vote
+  """
+  @spec call_vote(Actions.data()) :: Floor.t()
+  def call_vote({floor, _, _}), do: Map.put(floor, :voting, true)
 end

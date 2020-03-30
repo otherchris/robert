@@ -27,18 +27,33 @@ defmodule ActionsTest do
 
     test "motion to adjourn needs a second" do
       {:ok, floor} = Actions.apply_action({:motion_to_adjourn, {%Floor{speaker: "speaker"}, "speaker", :any}})
-      assert floor.needs_second
+      assert floor.waiting_for_second
     end
   end
 
   describe "second" do
     test "must need a second" do
-      assert {:error, :needs_second?} = Actions.check_action({:second, {%Floor{}, "some_subject", :any}})
+      assert {:error, :waiting_for_second} = Actions.check_action({:second, {%Floor{}, "some_subject", :any}})
     end
 
     test "unsets need_second?" do
-      {:ok, floor} = Actions.apply_action({:second, {%Floor{needs_second: true}, "speaker", :any}})
-      refute floor.needs_second
+      {:ok, floor} = Actions.apply_action({:second, {%Floor{waiting_for_second: true}, "speaker", :any}})
+      refute floor.waiting_for_second
+    end
+  end
+
+  describe "call_vote" do
+    test "subject must be the chair" do
+      assert {:error, :is_chair} = Actions.check_action({:call_vote, {%Floor{}, "some_subject", :any}})
+    end
+
+    test "must not be waiting for second" do
+      assert {:error, :not_waiting_for_second} = Actions.check_action({:call_vote, {%Floor{chair: "chair", waiting_for_second: true}, "chair", :any}})
+    end
+
+    test "sets voting" do
+      {:ok, floor} = Actions.apply_action({:call_vote, {%Floor{chair: "chair"}, "chair", :any}})
+      assert floor.voting
     end
   end
 end

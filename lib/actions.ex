@@ -20,7 +20,8 @@ defmodule Actions do
   def list_of_actions(), do: %{
     recognize: [:is_chair],
     motion_to_adjourn: [:has_floor],
-    second: [:needs_second?]
+    second: [:waiting_for_second],
+    call_vote: [:is_chair, :not_waiting_for_second]
   }
 
   @spec check_action(t()) :: :ok | {:error, atom}
