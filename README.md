@@ -1,21 +1,10 @@
 # Robert
 
-**TODO: Add description**
+A Robert's Rules of Order Engine.
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `robert` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:robert, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/robert](https://hexdocs.pm/robert).
-
+- [RulesServer](lib/rules_server.ex) A server that maintains the state of
+  a meeting
+- [Floor](lib/floor.ex) An abstraction describing the state of a meeting
+- [Actions](lib/actions.ex) Things that can happen in a meeting
+- [Checks](lib/checks.ex) Assertions about the state of the meeting, who is
+  acting, and whom they are acting upon that determine if it can proceed
