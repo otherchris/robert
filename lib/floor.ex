@@ -3,20 +3,19 @@ defmodule Floor do
   Documentation for `Floor`.
   """
 
-  @behaviour Actions
-
   defstruct [
     :chair,
     :speaker,
     motion_stack: [],
     need_second: false
   ]
+
   @type t() :: %Floor{}
 
   @doc """
   Chair recognizes a speaker
   """
-  @spec recognize(Action.t()) :: Floor.t()
+  @spec recognize(Actions.data()) :: Floor.t()
   @impl true
   def recognize({floor, _, new_speaker}), do: Map.put(floor, :speaker, new_speaker)
 
@@ -27,7 +26,7 @@ defmodule Floor do
   @impl true
   def motion_to_adjourn({floor, _, _}) do
     floor
-    |> Map.put(:motion_stack, floor.motion_stack ++ [:adjourn])
+    |> Map.put(:motion_stack, floor.motion_stack ++ [:motion_to_adjourn])
     |> Map.put(:need_second, true)
   end
 
