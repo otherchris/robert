@@ -21,7 +21,7 @@ defmodule Actions do
     recognize: [:is_chair],
     motion_to_adjourn: [:has_floor],
     second: [:waiting_for_second],
-    call_vote: [:is_chair, :not_waiting_for_second]
+    call_vote: [:is_chair, :not_waiting_for_second, :not_voting]
   }
 
   @spec check_action(t()) :: :ok | {:error, atom}

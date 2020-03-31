@@ -80,4 +80,13 @@ defmodule Checks do
     end
   end
   def not_waiting_for_second({:error, msg}), do: {:error, msg}
+
+  def not_voting({:ok, data = {floor, _, _}}) do
+    if !floor.voting do
+      {:ok, data}
+    else
+      {:error, :not_voting}
+    end
+  end
+  def not_voting({:error, msg}), do: {:error, msg}
 end

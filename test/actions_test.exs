@@ -51,9 +51,18 @@ defmodule ActionsTest do
       assert {:error, :not_waiting_for_second} = Actions.check_action({:call_vote, {%Floor{chair: "chair", waiting_for_second: true}, "chair", :any}})
     end
 
+    test "must not be voting" do
+      assert {:error, :not_voting} = Actions.check_action({:call_vote, {%Floor{chair: "chair", voting: true}, "chair", :any}})
+    end
+
     test "sets voting" do
       {:ok, floor} = Actions.apply_action({:call_vote, {%Floor{chair: "chair"}, "chair", :any}})
       assert floor.voting
+    end
+
+    test "sets vote" do
+      {:ok, floor} = Actions.apply_action({:call_vote, {%Floor{chair: "chair"}, "chair", :any}})
+      assert floor.vote == %{ yeas: [], nays: [] }
     end
   end
 end

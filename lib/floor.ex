@@ -11,6 +11,7 @@ defmodule Floor do
   defstruct [
     :chair,
     :speaker,
+    :vote,
     motion_stack: [],
     waiting_for_second: false,
     voting: false
@@ -44,5 +45,9 @@ defmodule Floor do
   Calls a vote
   """
   @spec call_vote(Actions.data()) :: Floor.t()
-  def call_vote({floor, _, _}), do: Map.put(floor, :voting, true)
+  def call_vote({floor, _, _}) do
+    floor
+    |> Map.put(:vote, %{yeas: [], nays: []})
+    |> Map.put(:voting, true)
+  end
 end
