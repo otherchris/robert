@@ -22,7 +22,8 @@ defmodule Actions do
     motion_to_adjourn: [:has_floor],
     second: [:waiting_for_second],
     call_vote: [:is_chair, :not_waiting_for_second, :not_voting],
-    vote: [:voting, :vote_set, :object_is_vote]
+    vote: [:voting, :vote_set, :object_is_vote],
+    end_vote: [:voting, :is_chair]
   }
 
   @spec check_action(t()) :: :ok | {:error, atom}

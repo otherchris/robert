@@ -95,4 +95,29 @@ defmodule ActionsTest do
       assert nays == ["subject_id"]
     end
   end
+
+  describe "end_vote" do
+    test "subject must be the chair" do
+      assert {:error, :is_chair} = Actions.check_action({:end_vote, {%Floor{voting: true}, "some_subject", :any}})
+    end
+
+    test "must be voting" do
+      assert {:error, :voting} = Actions.check_action({:end_vote, {%Floor{chair: "subject_id", voting: false}, "subject_id", :yea}})
+    end
+
+    test "unsets voting" do
+      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{ chair: "subject_id", voting: true }, "subject_id", :any}})
+      refute floor.voting
+    end
+
+    test "copies vote to last_vote" do
+      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{ chair: "subject_id", voting: true, vote: :some_value}, "subject_id", :any}})
+      assert floor.last_vote == :some_value
+    end
+
+    test "unsets vote" do
+      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{ chair: "subject_id", voting: true, vote: :some_value}, "subject_id", :any}})
+      assert floor.vote == %{}
+    end
+  end
 end

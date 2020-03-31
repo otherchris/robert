@@ -12,6 +12,7 @@ defmodule Floor do
     :chair,
     :speaker,
     :vote,
+    :last_vote,
     motion_stack: [],
     waiting_for_second: false,
     voting: false
@@ -63,5 +64,16 @@ defmodule Floor do
         :nay -> [yeas, nays ++ [subject]]
       end
     Map.put(floor, :vote, %{yeas: yeas, nays: nays})
+  end
+
+  @doc """
+  Concludes and saves a vote
+  """
+  @spec end_vote(Actions.data()) :: Floor.t()
+  def end_vote({floor = %{vote: vote}, _, _}) do
+    floor
+    |> Map.put(:last_vote, vote)
+    |> Map.put(:vote, %{})
+    |> Map.put(:voting, false)
   end
 end
