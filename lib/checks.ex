@@ -54,16 +54,16 @@ defmodule Checks do
       {:error, :previous_error}
   """
   @spec is_chair(check_pass() | check_fail()) :: check_pass() | check_fail()
-  def is_chair({:ok, {floor = %Floor{chair: chair}, subject_id, object_id}}) do
+  def is_chair({:ok, data = {%Floor{chair: chair}, subject_id, _}}) do
     if subject_id == chair do
-      {:ok, {floor, subject_id, object_id}}
+      {:ok, data}
     else
       {:error, :is_chair}
     end
   end
   def is_chair({:error, msg}), do: {:error, msg}
 
-  def waiting_for_second({:ok, data = {floor, subject_id, object_id}}) do
+  def waiting_for_second({:ok, data = {floor, _, _}}) do
     if floor.waiting_for_second do
       {:ok, data}
     else
@@ -72,7 +72,7 @@ defmodule Checks do
   end
   def waiting_for_second({:error, msg}), do: {:error, msg}
 
-  def not_waiting_for_second({:ok, data = {floor, subject_id, object_id}}) do
+  def not_waiting_for_second({:ok, data = {floor, _, _}}) do
     if !floor.waiting_for_second do
       {:ok, data}
     else
