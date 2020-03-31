@@ -12,7 +12,8 @@ defmodule Floor do
     :chair,
     :speaker,
     motion_stack: [],
-    waiting_for_second: false
+    waiting_for_second: false,
+    voting: false
   ]
 
   @type t() :: %Floor{}

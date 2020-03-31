@@ -15,7 +15,7 @@ defmodule Actions do
 
   @type t() :: {atom, data()}
   @type data() :: {Floor.t(), String.t(), String.t() | atom}
-  @type result() :: Floor.t() | {:error, atom}
+  @type result() :: {:ok, Floor.t()} | {:error, atom}
 
   def list_of_actions(), do: %{
     recognize: [:is_chair],
