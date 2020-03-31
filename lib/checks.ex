@@ -63,6 +63,7 @@ defmodule Checks do
   end
   def is_chair({:error, msg}), do: {:error, msg}
 
+  @spec waiting_for_second(check_pass() | check_fail()) :: check_pass() | check_fail()
   def waiting_for_second({:ok, data = {floor, _, _}}) do
     if floor.waiting_for_second do
       {:ok, data}
@@ -72,6 +73,7 @@ defmodule Checks do
   end
   def waiting_for_second({:error, msg}), do: {:error, msg}
 
+  @spec not_waiting_for_second(check_pass() | check_fail()) :: check_pass() | check_fail()
   def not_waiting_for_second({:ok, data = {floor, _, _}}) do
     if !floor.waiting_for_second do
       {:ok, data}
@@ -81,6 +83,7 @@ defmodule Checks do
   end
   def not_waiting_for_second({:error, msg}), do: {:error, msg}
 
+  @spec not_voting(check_pass() | check_fail()) :: check_pass() | check_fail()
   def not_voting({:ok, data = {floor, _, _}}) do
     if !floor.voting do
       {:ok, data}
@@ -90,6 +93,7 @@ defmodule Checks do
   end
   def not_voting({:error, msg}), do: {:error, msg}
 
+  @spec object_is_vote(check_pass() | check_fail()) :: check_pass() | check_fail()
   def object_is_vote({:ok, data = {_, _, object}}) do
     case object do
       :yea -> {:ok, data}
@@ -99,6 +103,7 @@ defmodule Checks do
   end
   def object_is_vote({:error, msg}), do: {:error, msg}
 
+  @spec voting(check_pass() | check_fail()) :: check_pass() | check_fail()
   def voting({:ok, data = {floor, _, _}}) do
     if floor.voting do
       {:ok, data}
@@ -108,6 +113,7 @@ defmodule Checks do
   end
   def voting({:error, msg}), do: {:error, msg}
 
+  @spec vote_set(check_pass() | check_fail()) :: check_pass() | check_fail()
   def vote_set({:ok, data = {floor, _, _}}) do
     case floor.vote do
       %{yeas: _, nays: _} -> {:ok, data}
