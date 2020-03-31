@@ -50,4 +50,18 @@ defmodule Floor do
     |> Map.put(:vote, %{yeas: [], nays: []})
     |> Map.put(:voting, true)
   end
+
+  @doc """
+  Applies a vote
+  """
+  @spec vote(Actions.data()) :: Floor.t()
+  def vote({floor = %{vote: %{yeas: yeas, nays: nays}}, subject, choice}) do
+    [yeas, nays] = Enum.map([yeas, nays], &Enum.reject(&1, fn(x) -> x == subject end))
+    [yeas, nays] =
+      case choice do
+        :yea -> [yeas ++ [subject], nays]
+        :nay -> [yeas, nays ++ [subject]]
+      end
+    Map.put(floor, :vote, %{yeas: yeas, nays: nays})
+  end
 end

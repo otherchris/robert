@@ -89,4 +89,30 @@ defmodule Checks do
     end
   end
   def not_voting({:error, msg}), do: {:error, msg}
+
+  def object_is_vote({:ok, data = {_, _, object}}) do
+    case object do
+      :yea -> {:ok, data}
+      :nay -> {:ok, data}
+      _ -> {:error, :object_is_vote}
+    end
+  end
+  def object_is_vote({:error, msg}), do: {:error, msg}
+
+  def voting({:ok, data = {floor, _, _}}) do
+    if floor.voting do
+      {:ok, data}
+    else
+      {:error, :voting}
+    end
+  end
+  def voting({:error, msg}), do: {:error, msg}
+
+  def vote_set({:ok, data = {floor, _, _}}) do
+    case floor.vote do
+      %{yeas: _, nays: _} -> {:ok, data}
+      _ -> {:error, :vote_set}
+    end
+  end
+  def vote_set({:error, msg}), do: {:error, msg}
 end
