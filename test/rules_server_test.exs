@@ -25,4 +25,16 @@ defmodule RulesServerTest do
       assert ms == []
     end
   end
+
+  describe "check_actions" do
+    test "report the list of doable actions for a given user", %{rules_server: rules_server} do
+      map_of_actions = RulesServer.check_actions(rules_server, "chair")
+      assert map_of_actions[:recognize]
+      assert map_of_actions[:call_vote]
+      refute map_of_actions[:motion_to_adjourn]
+      refute map_of_actions[:second]
+      refute map_of_actions[:vote]
+      refute map_of_actions[:end_vote]
+    end
+  end
 end
