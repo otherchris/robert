@@ -75,20 +75,20 @@ defmodule Checks do
 
   @spec not_waiting_for_second(check_pass() | check_fail()) :: check_pass() | check_fail()
   def not_waiting_for_second({:ok, data = {floor, _, _}}) do
-    if !floor.waiting_for_second do
-      {:ok, data}
-    else
+    if floor.waiting_for_second do
       {:error, :not_waiting_for_second}
+    else
+      {:ok, data}
     end
   end
   def not_waiting_for_second({:error, msg}), do: {:error, msg}
 
   @spec not_voting(check_pass() | check_fail()) :: check_pass() | check_fail()
   def not_voting({:ok, data = {floor, _, _}}) do
-    if !floor.voting do
-      {:ok, data}
-    else
+    if floor.voting do
       {:error, :not_voting}
+    else
+      {:ok, data}
     end
   end
   def not_voting({:error, msg}), do: {:error, msg}

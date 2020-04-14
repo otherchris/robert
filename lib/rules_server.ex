@@ -65,10 +65,8 @@ defmodule RulesServer do
   @impl true
   def handle_cast({:action, {action, subject_id, object_id}}, state = %{floor: floor}) do
     new_state =
-      with {:ok, new_floor} <- Actions.apply_action({action, {floor, subject_id, object_id}})
-      do
-        Map.put(state, :floor, new_floor)
-      else
+      case Actions.apply_action({action, {floor, subject_id, object_id}}) do
+        {:ok, new_floor} -> Map.put(state, :floor, new_floor)
         {:error, _} -> state
       end
     {:noreply, new_state}

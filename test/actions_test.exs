@@ -48,7 +48,10 @@ defmodule ActionsTest do
     end
 
     test "must not be waiting for second" do
-      assert {:error, :not_waiting_for_second} = Actions.check_action({:call_vote, {%Floor{chair: "chair", waiting_for_second: true}, "chair", :any}})
+      assert {:error, :not_waiting_for_second} = Actions.check_action({
+        :call_vote,
+        {%Floor{chair: "chair", waiting_for_second: true}, "chair", :any}
+      })
     end
 
     test "must not be voting" do
@@ -62,13 +65,16 @@ defmodule ActionsTest do
 
     test "sets vote" do
       {:ok, floor} = Actions.apply_action({:call_vote, {%Floor{chair: "chair", vote: %{}}, "chair", :any}})
-      assert floor.vote == %{ yeas: [], nays: [] }
+      assert floor.vote == %{yeas: [], nays: []}
     end
   end
 
   describe "vote" do
     test "must be voting" do
-      assert {:error, :voting} = Actions.check_action({:vote, {%Floor{voting: false, vote: %{yeas: [], nays: []}}, "subject_id", :yea}})
+      assert {:error, :voting} = Actions.check_action({
+        :vote,
+        {%Floor{voting: false, vote: %{yeas: [], nays: []}}, "subject_id", :yea}
+      })
     end
 
     test "object must be a vote" do
@@ -76,21 +82,33 @@ defmodule ActionsTest do
     end
 
     test "registers new vote" do
-      {:ok, %{vote: %{yeas: yeas, nays: nays}}} = Actions.apply_action({:vote, {%Floor{voting: true, vote: %{yeas: [], nays: []}}, "subject_id", :yea}})
+      {:ok, %{vote: %{yeas: yeas, nays: nays}}} = Actions.apply_action({
+        :vote,
+        {%Floor{voting: true, vote: %{yeas: [], nays: []}}, "subject_id", :yea}
+      })
       assert yeas == ["subject_id"]
       assert nays == []
 
-      {:ok, %{vote: %{yeas: yeas, nays: nays}}} = Actions.apply_action({:vote, {%Floor{voting: true, vote: %{yeas: [], nays: []}}, "subject_id", :nay}})
+      {:ok, %{vote: %{yeas: yeas, nays: nays}}} = Actions.apply_action({
+        :vote,
+        {%Floor{voting: true, vote: %{yeas: [], nays: []}}, "subject_id", :nay}
+      })
       assert yeas == []
       assert nays == ["subject_id"]
     end
 
     test "changes existing vote" do
-      {:ok, %{vote: %{yeas: yeas, nays: nays}}} = Actions.apply_action({:vote, {%Floor{voting: true, vote: %{yeas: [], nays: ["subject_id"]}}, "subject_id", :yea}})
+      {:ok, %{vote: %{yeas: yeas, nays: nays}}} = Actions.apply_action({
+        :vote,
+        {%Floor{voting: true, vote: %{yeas: [], nays: ["subject_id"]}}, "subject_id", :yea}
+      })
       assert yeas == ["subject_id"]
       assert nays == []
 
-      {:ok, %{vote: %{yeas: yeas, nays: nays}}} = Actions.apply_action({:vote, {%Floor{voting: true, vote: %{yeas: ["subject_id"], nays: []}}, "subject_id", :nay}})
+      {:ok, %{vote: %{yeas: yeas, nays: nays}}} = Actions.apply_action({
+        :vote,
+        {%Floor{voting: true, vote: %{yeas: ["subject_id"], nays: []}}, "subject_id", :nay}
+      })
       assert yeas == []
       assert nays == ["subject_id"]
     end
@@ -106,17 +124,17 @@ defmodule ActionsTest do
     end
 
     test "unsets voting" do
-      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{ chair: "subject_id", voting: true }, "subject_id", :any}})
+      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{chair: "subject_id", voting: true}, "subject_id", :any}})
       refute floor.voting
     end
 
     test "copies vote to last_vote" do
-      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{ chair: "subject_id", voting: true, vote: :some_value}, "subject_id", :any}})
+      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{chair: "subject_id", voting: true, vote: :some_value}, "subject_id", :any}})
       assert floor.last_vote == :some_value
     end
 
     test "unsets vote" do
-      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{ chair: "subject_id", voting: true, vote: :some_value}, "subject_id", :any}})
+      {:ok, floor} = Actions.apply_action({:end_vote, {%Floor{chair: "subject_id", voting: true, vote: :some_value}, "subject_id", :any}})
       assert floor.vote == %{}
     end
   end
