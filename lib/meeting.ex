@@ -18,18 +18,32 @@ defmodule Meeting do
     voting: false
   ]
 
-  @type t() :: %Meeting{}
+  @type vote() :: %{member_id: String.t(), vote: String.t()}
+  @type vote_result() :: %{question: question(), votes: list(vote())}
+  @type question() :: %{content: String.t, type: Atom.t()}
+
+  @type t() :: %Meeting{
+    chair: String.t(),
+    speaker: String.t(),
+    current_vote: list(vote()),
+    all_votes: list(vote_result()),
+    question: question(),
+    question_stack: list(question()),
+
+    waiting_for_second: boolean,
+    voting: boolean
+  }
 
   @doc """
-  Chair recognizes a speaker
+  Speaker is recognized
   """
   @spec recognize(Actions.data()) :: Meeting.t()
   def recognize({meeting, _, new_speaker}), do: Map.put(meeting, :speaker, new_speaker)
 
   @doc """
-  Make a motion to adjourn
+  Make a motion 
   """
-  @spec motion_to_adjourn(Actions.data()) :: Meeting.t()
+  @spec motion(Actions.data()) :: Meeting.t()
   def motion_to_adjourn({meeting, _, _}) do
     meeting
     |> Map.put(:motion_stack, meeting.motion_stack ++ [:motion_to_adjourn])
@@ -37,7 +51,7 @@ defmodule Meeting do
   end
 
   @doc """
-  Seconds the motion on the Meeting
+  Seconds the motion on the floor 
   """
   @spec second(Actions.data()) :: Meeting.t()
   def second({meeting, _, _}), do: Map.put(meeting, :waiting_for_second, false)

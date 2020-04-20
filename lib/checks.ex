@@ -79,8 +79,6 @@ defmodule Checks do
       {:ok, data}
     else
       {:error, :not_waiting_for_second}
-    else
-      {:ok, data}
     end
   end
   def not_waiting_for_second({:error, msg}), do: {:error, msg}
@@ -89,10 +87,8 @@ defmodule Checks do
   def not_voting({:ok, data = {meeting, _, _}}) do
     if !meeting.voting do
       {:ok, data}
-    else
+    else 
       {:error, :not_voting}
-    else
-      {:ok, data}
     end
   end
   def not_voting({:error, msg}), do: {:error, msg}

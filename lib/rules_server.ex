@@ -58,7 +58,7 @@ defmodule RulesServer do
   def handle_call({:check_actions, subject_id}, _from, state) when is_binary(subject_id) do
     list =
       Actions.list_of_actions
-      |> Enum.map(fn({k, v}) -> {k, Actions.check_action({k, {state.meeting, subject_id, :any}})} end)
+      |> Enum.map(fn({k, _}) -> {k, Actions.check_action({k, {state.meeting, subject_id, :any}})} end)
     {:reply, list, state}
   end
 

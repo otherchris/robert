@@ -1,4 +1,4 @@
-defmodule Actions do
+defmodule Action do
   @moduledoc """
   An action is a tuple with the action name and action data (`Meeting`, member_id of subject,
   member_id of object).
