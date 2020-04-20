@@ -17,7 +17,7 @@ defmodule Actions do
   @type data() :: {Meeting.t(), String.t(), String.t() | atom}
   @type result() :: {:ok, Meeting.t()} | {:error, atom}
 
-  def list_of_actions(), do: %{
+  def list_of_actions, do: %{
     recognize: [:is_chair],
     motion_to_adjourn: [:has_floor],
     second: [:waiting_for_second],
@@ -28,13 +28,12 @@ defmodule Actions do
 
   @spec check_action(t()) :: :ok | {:error, atom}
   def check_action({action_name, data}) do
-    with {:ok, _} <-
+    check =
       list_of_actions()
       |> Map.get(action_name)
       |> List.foldr({:ok, data}, fn(check, acc) -> apply(Checks, check, [acc]) end)
-    do
-      :ok
-    else
+    case check do
+      {:ok, _} -> :ok
       e -> e
     end
   end
