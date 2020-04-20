@@ -1,6 +1,6 @@
 defmodule Actions do
   @moduledoc """
-  An action is a tuple with the action name and action data (`Floor`, member_id of subject,
+  An action is a tuple with the action name and action data (`Meeting`, member_id of subject,
   member_id of object).
 
   This module does three things:
@@ -14,8 +14,8 @@ defmodule Actions do
   """
 
   @type t() :: {atom, data()}
-  @type data() :: {Floor.t(), String.t(), String.t() | atom}
-  @type result() :: {:ok, Floor.t()} | {:error, atom}
+  @type data() :: {Meeting.t(), String.t(), String.t() | atom}
+  @type result() :: {:ok, Meeting.t()} | {:error, atom}
 
   def list_of_actions(), do: %{
     recognize: [:is_chair],
@@ -43,7 +43,7 @@ defmodule Actions do
   def apply_action({action_name, data}) do
     with :ok <- check_action({action_name, data})
     do
-      {:ok, apply(Floor, action_name, [data])}
+      {:ok, apply(Meeting, action_name, [data])}
     else
       e -> e
     end

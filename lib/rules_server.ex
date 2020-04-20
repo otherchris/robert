@@ -45,7 +45,7 @@ defmodule RulesServer do
   @impl true
   def init(:ok) do
     {:ok, %{
-      floor: %Floor{
+      meeting: %Meeting{
         chair: "chair",
         speaker: "member_id_has_floor", # for testing TODO: clean up
         motion_stack: []
@@ -58,16 +58,16 @@ defmodule RulesServer do
   def handle_call({:check_actions, subject_id}, _from, state) when is_binary(subject_id) do
     list =
       Actions.list_of_actions
-      |> Enum.map(fn({k, v}) -> {k, Actions.check_action({k, {state.floor, subject_id, :any}})} end)
+      |> Enum.map(fn({k, v}) -> {k, Actions.check_action({k, {state.meeting, subject_id, :any}})} end)
     {:reply, list, state}
   end
 
   @impl true
-  def handle_cast({:action, {action, subject_id, object_id}}, state = %{floor: floor}) do
+  def handle_cast({:action, {action, subject_id, object_id}}, state = %{meeting: meeting}) do
     new_state =
-      with {:ok, new_floor} <- Actions.apply_action({action, {floor, subject_id, object_id}})
+      with {:ok, new_floor} <- Actions.apply_action({action, {meeting, subject_id, object_id}})
       do
-        Map.put(state, :floor, new_floor)
+        Map.put(state, :meeting, new_floor)
       else
         {:error, _} -> state
       end
