@@ -5,8 +5,6 @@ defmodule RulesServer do
 
   use GenServer
 
-  @type action_message() :: {atom, String.t(), String.t() | atom}
-
   # Client API
 
   @doc """
@@ -17,60 +15,57 @@ defmodule RulesServer do
   end
 
   @doc """
-  Apply an action
+  Get the current meeting state
   """
-  @spec apply_action(pid, action_message()) :: :ok
-  def apply_action(server, {action, subject_id, object_id}) do
-    GenServer.cast(server, {:action, {action, subject_id, object_id}})
-    :ok
+  @spec get_meeting(pid()) :: Meeting.t()
+  def get_meeting(server) do
+    GenServer.call(server, :report)
   end
 
   @doc """
-  Return the list of allowed actions
+  Recognize a speaker
   """
-  @spec check_actions(pid, String.t()) :: map
-  def check_actions(server, subject_id) do
-    server
-    |> GenServer.call({:check_actions, subject_id})
-    |> Enum.map(&(
-      case &1 do
-        {a, :ok} -> {a, true}
-        {a, {:error, _}} -> {a, false}
-      end
-    ))
+  @spec recognize(pid(), String.t(), String.t()) :: :ok
+  def recognize(server, new_speaker, actor_id) do
+    GenServer.cast(server, {:recognize, new_speaker, actor_id})
+  end
+
+  @doc """
+  Make a motion
+  """
+  @spec motion(pid(), String.t, String.t) :: :ok
+  def motion(server, motion_content, actor_id) do
+    GenServer.cast(server, {:motion, motion_content, actor_id})
   end
 
   # Server callbacks
 
   @impl true
   def init(:ok) do
-    {:ok, %{
-      meeting: %Meeting{
+    {:ok, %Meeting{
         chair: "chair",
         speaker: "member_id_has_floor", # for testing TODO: clean up
         motion_stack: []
-      },
-      members: [],
-    }}
+      }
+    }
   end
 
   @impl true
-  def handle_call({:check_actions, subject_id}, _from, state) when is_binary(subject_id) do
-    list =
-      Actions.list_of_actions
-      |> Enum.map(fn({k, _}) -> {k, Actions.check_action({k, {state.meeting, subject_id, :any}})} end)
-    {:reply, list, state}
+  def handle_call(:report, _from, state) do
+    {:reply, state, state}
   end
 
   @impl true
-  def handle_cast({:action, {action, subject_id, object_id}}, state = %{meeting: meeting}) do
-    new_state =
-      with {:ok, new_floor} <- Actions.apply_action({action, {meeting, subject_id, object_id}})
-      do
-        Map.put(state, :meeting, new_floor)
-      else
-        {:error, _} -> state
-      end
-    {:noreply, new_state}
+  def handle_cast({:recognize, new_speaker, actor_id}, state = %{chair: chair}) do
+    if actor_id == chair do
+      {:noreply, Meeting.recognize(state, new_speaker)}
+    else
+      {:noreply, state}
+    end
+  end
+
+  @impl true
+  def handle_cast({:motion, motion_content, actor_id}, state) do
+    {:noreply, Meeting.motion(state, %{content: motion_content, actor_id: actor_id})}
   end
 end

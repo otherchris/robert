@@ -9,32 +9,32 @@ defmodule RulesServerTest do
     %{rules_server: rules_server}
   end
 
-  describe "apply_action" do
-    # Testing on the "motion_to_adjourn" action. Individual actions and their
-    # effects should be tested on Meeting and Rules. This case is enough to
-    # verify the behavior of the RulesServer.
-    test "make a motion to adjourn if allowed", %{rules_server: rules_server} do
-      RulesServer.apply_action(rules_server, {:motion_to_adjourn, "member_id_has_floor", ""})
-      %{meeting: %{motion_stack: ms}} = :sys.get_state(rules_server)
-      assert ms == [:motion_to_adjourn]
-    end
-
-    test "do not make a motion to adjourn if not allowed", %{rules_server: rules_server} do
-      RulesServer.apply_action(rules_server, {:motion_to_adjourn, "member_id", ""})
-      %{meeting: %{motion_stack: ms}} = :sys.get_state(rules_server)
-      assert ms == []
+  describe "get_meeting" do
+    test "reports the state of the meeting", %{rules_server: rs} do
+      %{chair: chair} = RulesServer.get_meeting(rs)
+      assert chair == "chair"
     end
   end
 
-  describe "check_actions" do
-    test "report the list of doable actions for a given user", %{rules_server: rules_server} do
-      map_of_actions = RulesServer.check_actions(rules_server, "chair")
-      assert map_of_actions[:recognize]
-      assert map_of_actions[:call_vote]
-      refute map_of_actions[:motion_to_adjourn]
-      refute map_of_actions[:second]
-      refute map_of_actions[:vote]
-      refute map_of_actions[:end_vote]
+  describe "recognize" do
+    test "recognize updates speaker if the chair does it", %{rules_server: rs} do
+      RulesServer.recognize(rs, "new_speaker_id", "chair")
+      %{speaker: speaker} = :sys.get_state(rs)
+      assert speaker == "new_speaker_id"
+    end
+
+    test "recognize does not update the speaker if it's not the chair doing it", %{rules_server: rs} do
+      RulesServer.recognize(rs, "new_speaker_id", "not chair")
+      %{speaker: speaker} = :sys.get_state(rs)
+      assert speaker != "new_speaker_id"
+    end
+  end
+
+  describe "motion" do
+    test "motion adds a motion to the motion stack", %{rules_server: rs} do
+      RulesServer.motion(rs, "move to boogie", "not chair")
+      %{motion_stack: [last_motion | _rest]} = :sys.get_state(rs)
+      assert last_motion.content == "move to boogie"
     end
   end
 end
